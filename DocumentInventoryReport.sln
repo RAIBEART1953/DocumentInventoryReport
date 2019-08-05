@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.757
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{159641D6-6404-4A2A-AE62-294DE0FE8301}") = "DocumentInventoryReport", "DocumentInventoryReport\DocumentInventoryReport.dtproj", "{34414D3A-9258-4430-83B1-5AFB1CA13F54}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Development|Default = Development|Default
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{34414D3A-9258-4430-83B1-5AFB1CA13F54}.Development|Default.ActiveCfg = Development
+		{34414D3A-9258-4430-83B1-5AFB1CA13F54}.Development|Default.Build.0 = Development
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {FC7EEBE9-7208-454C-810A-81D5BB4B3EB4}
+	EndGlobalSection
+EndGlobal

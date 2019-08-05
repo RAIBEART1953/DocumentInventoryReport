@@ -1,0 +1,13 @@
+﻿<?xml version="1.0"?>
+<DTS:ConnectionManager xmlns:DTS="www.microsoft.com/SqlServer/Dts"
+  DTS:ObjectName="SMTP_Gmail_Client"
+  DTS:DTSID="{2C7AB665-E538-43A1-A0F3-F1A07F59E734}"
+  DTS:CreationName="SMTP+">
+  <DTS:ObjectData>
+    <ConnectionManager
+      ConnectionString="ConnectionType=ExplicitTLS;ServerHost=smtp.gmail.com;ServerPort=587;ServerUser=BeyondFinance.SSIS@gmail.com;ServerTimeout=100;AuthenticationType=Auto;LogFile=;Pipelining=True;Chunking=True;RetainSameConnection=True;ProxyHost=;ProxyPort=0;ProxyUser=;">
+      <ServerPassword
+        Sensitive="1" xmlns="www.microsoft.com/SqlServer/Dts">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAiDG1xzRZH0SK/dQzRrOPYAAAAAACAAAAAAAQZgAAAAEAACAAAADrtaV9b6gouU2BvOVZufg4DHfehmeBCXPLaYK8v1uR9gAAAAAOgAAAAAIAACAAAADBM/mXi8fT4AjsLp6quA+bXh36YXkvqppllFlErA0Z53AAAACwo+AONsPjdeQtvP7m6VrSekH30Mi5IV53BRiEW+NGcusYUEvOpwMzRWrPusj0DsAbvAQMwPY9bsvOBmI9BK644z/SMlJG0FO3dIbSzXbCvBW01nDuDOZV2EKuPPCfGdW0XGPCj8CQP2aBozXhsjGGQAAAAOaFf8MRS5t65U7nn5UpP6XJ8+W7ER8RuALe6gMSXxHrFKUAGmo31UfZs1h9BUMu6EqlSqx2VEmBfKct0IGHvyc=</ServerPassword>
+    </ConnectionManager>
+  </DTS:ObjectData>
+</DTS:ConnectionManager>

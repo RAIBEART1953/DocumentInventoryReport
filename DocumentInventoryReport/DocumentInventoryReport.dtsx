@@ -1,0 +1,2263 @@
+﻿<?xml version="1.0"?>
+<DTS:Executable xmlns:DTS="www.microsoft.com/SqlServer/Dts"
+  DTS:refId="Package"
+  DTS:CreationDate="8/5/2019 10:34:05 AM"
+  DTS:CreationName="Microsoft.Package"
+  DTS:CreatorComputerName="HOU-IT-RSTEWART"
+  DTS:CreatorName="HOU-IT-RSTEWART\rstewart"
+  DTS:DTSID="{11150033-94F2-4C8C-86D6-E293EE92D29E}"
+  DTS:ExecutableType="Microsoft.Package"
+  DTS:LastModifiedProductVersion="15.0.1301.433"
+  DTS:LocaleID="1033"
+  DTS:ObjectName="DocumentInventoryReport"
+  DTS:PackageType="5"
+  DTS:VersionBuild="8"
+  DTS:VersionGUID="{8FBAEE54-F26C-4B81-A6B8-2FA83F421873}">
+  <DTS:Property
+    DTS:Name="PackageFormatVersion">8</DTS:Property>
+  <DTS:ConnectionManagers>
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[BF_Redsift_Prod.rstewart]"
+      DTS:CreationName="ODBC"
+      DTS:DTSID="{FBF4E94B-6171-44FB-85AD-A151C98BA89E}"
+      DTS:ObjectName="BF_Redsift_Prod.rstewart">
+      <DTS:ObjectData>
+        <DTS:ConnectionManager
+          DTS:ConnectionString="uid=rstewart;Dsn=RedshiftProd32;">
+          <DTS:Password
+            DTS:Name="pwd"
+            Sensitive="1"
+            Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAwBOuxLnrgECzQK6HR+NDbwAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAAC559ZVbnN1AG3Q7JQ445XBjCwn7Mcus48qQ/zUyJUSggAAAAAOgAAAAAIAACAAAABvbS942mZJQXtygYMdygmP+nABpmZOdV/+BHicGI2WHSAAAADZU18xr0ov3Bv3thdhhEGNIM85ECE+7SK4fZBLZBn5mkAAAAC64MiFGVS1Xh/8HAYudCYkLZSjgdyzx0gXj35flePu5Y7zN/9NcbdAbngN2CxpsK2sWzl+6Qo2OZFof6yU/YlP</DTS:Password>
+        </DTS:ConnectionManager>
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[DocumentInventoryList]"
+      DTS:CreationName="EXCEL+"
+      DTS:DTSID="{6F9348F3-691C-4019-BB99-E659B8EF29AD}"
+      DTS:ObjectName="DocumentInventoryList">
+      <DTS:ObjectData>
+        <ConnectionManager
+          ConnectionString="ExcelFilePath=C:\Users\rstewart\Downloads\InventoryReport_20190726.xlsx;FormatType=Auto;Recalculate=False;DateTimeFormat=;RetainSameConnection=True;" />
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[Excel Connection Manager 1]"
+      DTS:CreationName="EXCEL+"
+      DTS:DTSID="{6EDFCF73-7252-442D-9CF2-6C0611D193BD}"
+      DTS:ObjectName="Excel Connection Manager 1">
+      <DTS:ObjectData>
+        <ConnectionManager
+          ConnectionString="ExcelFilePath=C:\SSIS_Development\DocumentInventoryReport\Files\Export\MissingDocumentInventory.xlsx;FormatType=Auto;Recalculate=False;DateTimeFormat=;RetainSameConnection=True;" />
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[HOU-IT-RSTEWART\SQL2017.BF_Redshift_Staging]"
+      DTS:CreationName="OLEDB"
+      DTS:DTSID="{18643944-25E8-4DC2-BC40-2A10654C536D}"
+      DTS:ObjectName="HOU-IT-RSTEWART\SQL2017.BF_Redshift_Staging">
+      <DTS:ObjectData>
+        <DTS:ConnectionManager
+          DTS:ConnectionString="Data Source=EC2AMAZ-GQJ0QHR\SQL2017_SSIS;Initial Catalog=BF_Redshift_Staging;Provider=SQLNCLI11.1;Integrated Security=SSPI;Auto Translate=False;" />
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+  </DTS:ConnectionManagers>
+  <DTS:Variables />
+  <DTS:Executables>
+    <DTS:Executable
+      DTS:refId="Package\Clear STG for new inventory"
+      DTS:CreationName="Microsoft.ExecuteSQLTask"
+      DTS:Description="Execute SQL Task"
+      DTS:DTSID="{A01C4D52-33BF-452B-A028-9273942C7626}"
+      DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Clear STG for new inventory"
+      DTS:ThreadHint="0">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <SQLTask:SqlTaskData
+          SQLTask:Connection="{18643944-25E8-4DC2-BC40-2A10654C536D}"
+          SQLTask:SqlStatementSource="TRUNCATE TABLE &#xA;stg_ClearOne_MissingData;&#xA;&#xA;TRUNCATE TABLE &#xA;[dbo].[stg_AllPrograms];" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+      </DTS:ObjectData>
+    </DTS:Executable>
+    <DTS:Executable
+      DTS:refId="Package\Get Agent and Manager Data from Excel into STG"
+      DTS:CreationName="Microsoft.Pipeline"
+      DTS:Description="Data Flow Task"
+      DTS:DTSID="{EF6AF011-D00A-4E77-BB47-FCD957C77F89}"
+      DTS:ExecutableType="Microsoft.Pipeline"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Get Agent and Manager Data from Excel into STG"
+      DTS:TaskContact="Performs high-performance data extraction, transformation and loading;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <pipeline
+          version="1">
+          <components>
+            <component
+              refId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus"
+              componentClassID="Microsoft.ManagedComponentHost"
+              contactInfo="Extracts data from Excel worksheet.; COZYROC LLC; SSIS+; © 2006-2019 COZYROC LLC; All Rights Reserved; http://www.cozyroc.com/;0"
+              description="Extracts data from Excel worksheet."
+              name="Excel Source Plus"
+              usesDispositions="true"
+              validateExternalMetadata="False">
+              <properties>
+                <property
+                  dataType="System.Null"
+                  name="ComponentObject"
+                  typeConverter="NOTBROWSABLE" />
+                <property
+                  dataType="System.String"
+                  description="Source Excel worksheet."
+                  expressionType="Notify"
+                  name="Worksheet"
+                  typeConverter="CozyRoc.SqlServer.SSIS.TableEditor">Sheet1</property>
+                <property
+                  dataType="System.Boolean"
+                  description="Specifies first row contains column names."
+                  name="FirstRowHasColumnName">true</property>
+                <property
+                  dataType="System.String"
+                  description="Specifies source worksheet region."
+                  expressionType="Notify"
+                  name="Region">1, 1, 16, -1</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies output type."
+                  name="OutputType"
+                  typeConverter="CozyRoc.SqlServer.SSIS.ExcelSource+OutputTypes">0</property>
+                <property
+                  dataType="System.String"
+                  name="UserComponentTypeName">CozyRoc.ExcelSource</property>
+              </properties>
+              <connections>
+                <connection
+                  refId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Connections[EXCEL+]"
+                  connectionManagerID="Package.ConnectionManagers[DocumentInventoryList]"
+                  connectionManagerRefId="Package.ConnectionManagers[DocumentInventoryList]"
+                  description="COZYROC Excel Connection Manager"
+                  name="EXCEL+" />
+              </connections>
+              <outputs>
+                <output
+                  refId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Output]"
+                  name="Excel Source Plus Output">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Output].Columns[ProgramID]"
+                      dataType="wstr"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Output].ExternalColumns[ProgramID]"
+                      length="250"
+                      lineageId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Output].Columns[ProgramID]"
+                      name="ProgramID"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Output].Columns[ImportDate]"
+                      dataType="wstr"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Output].ExternalColumns[ImportDate]"
+                      length="250"
+                      lineageId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Output].Columns[ImportDate]"
+                      name="ImportDate"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Output].Columns[Enrollment_Package]"
+                      dataType="wstr"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Output].ExternalColumns[Enrollment_Package]"
+                      length="250"
+                      lineageId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Output].Columns[Enrollment_Package]"
+                      name="Enrollment_Package"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Output].Columns[IsBeyondContract]"
+                      dataType="wstr"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Output].ExternalColumns[IsBeyondContract]"
+                      length="250"
+                      lineageId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Output].Columns[IsBeyondContract]"
+                      name="IsBeyondContract"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Output].Columns[ATC_POA]"
+                      dataType="wstr"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Output].ExternalColumns[ATC_POA]"
+                      length="250"
+                      lineageId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Output].Columns[ATC_POA]"
+                      name="ATC_POA"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Output].Columns[Credit_Pull_Auth]"
+                      dataType="wstr"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Output].ExternalColumns[Credit_Pull_Auth]"
+                      length="250"
+                      lineageId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Output].Columns[Credit_Pull_Auth]"
+                      name="Credit_Pull_Auth"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Output].Columns[SPAA]"
+                      dataType="wstr"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Output].ExternalColumns[SPAA]"
+                      length="250"
+                      lineageId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Output].Columns[SPAA]"
+                      name="SPAA"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Output].Columns[Docusign_Certificate]"
+                      dataType="wstr"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Output].ExternalColumns[Docusign_Certificate]"
+                      length="250"
+                      lineageId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Output].Columns[Docusign_Certificate]"
+                      name="Docusign_Certificate"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Output].Columns[Enrollment_Package1]"
+                      dataType="wstr"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Output].ExternalColumns[Enrollment_Package1]"
+                      length="250"
+                      lineageId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Output].Columns[Enrollment_Package1]"
+                      name="Enrollment_Package1"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Output].Columns[IsBeyondContract1]"
+                      dataType="wstr"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Output].ExternalColumns[IsBeyondContract1]"
+                      length="250"
+                      lineageId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Output].Columns[IsBeyondContract1]"
+                      name="IsBeyondContract1"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Output].Columns[ATC_POA1]"
+                      dataType="wstr"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Output].ExternalColumns[ATC_POA1]"
+                      length="250"
+                      lineageId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Output].Columns[ATC_POA1]"
+                      name="ATC_POA1"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Output].Columns[Credit_Pull_Auth1]"
+                      dataType="wstr"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Output].ExternalColumns[Credit_Pull_Auth1]"
+                      length="250"
+                      lineageId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Output].Columns[Credit_Pull_Auth1]"
+                      name="Credit_Pull_Auth1"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Output].Columns[SPAA1]"
+                      dataType="wstr"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Output].ExternalColumns[SPAA1]"
+                      length="250"
+                      lineageId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Output].Columns[SPAA1]"
+                      name="SPAA1"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Output].Columns[Docusign_Certificate1]"
+                      dataType="wstr"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Output].ExternalColumns[Docusign_Certificate1]"
+                      length="250"
+                      lineageId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Output].Columns[Docusign_Certificate1]"
+                      name="Docusign_Certificate1"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Output].Columns[Total]"
+                      dataType="wstr"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Output].ExternalColumns[Total]"
+                      length="250"
+                      lineageId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Output].Columns[Total]"
+                      name="Total"
+                      truncationRowDisposition="FailComponent" />
+                  </outputColumns>
+                  <externalMetadataColumns
+                    isUsed="True">
+                    <externalMetadataColumn
+                      refId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Output].ExternalColumns[ProgramID]"
+                      dataType="wstr"
+                      length="250"
+                      name="ProgramID" />
+                    <externalMetadataColumn
+                      refId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Output].ExternalColumns[ImportDate]"
+                      dataType="wstr"
+                      length="250"
+                      name="ImportDate" />
+                    <externalMetadataColumn
+                      refId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Output].ExternalColumns[Enrollment_Package]"
+                      dataType="wstr"
+                      length="250"
+                      name="Enrollment_Package" />
+                    <externalMetadataColumn
+                      refId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Output].ExternalColumns[IsBeyondContract]"
+                      dataType="wstr"
+                      length="250"
+                      name="IsBeyondContract" />
+                    <externalMetadataColumn
+                      refId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Output].ExternalColumns[ATC_POA]"
+                      dataType="wstr"
+                      length="250"
+                      name="ATC_POA" />
+                    <externalMetadataColumn
+                      refId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Output].ExternalColumns[Credit_Pull_Auth]"
+                      dataType="wstr"
+                      length="250"
+                      name="Credit_Pull_Auth" />
+                    <externalMetadataColumn
+                      refId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Output].ExternalColumns[SPAA]"
+                      dataType="wstr"
+                      length="250"
+                      name="SPAA" />
+                    <externalMetadataColumn
+                      refId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Output].ExternalColumns[Docusign_Certificate]"
+                      dataType="wstr"
+                      length="250"
+                      name="Docusign_Certificate" />
+                    <externalMetadataColumn
+                      refId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Output].ExternalColumns[Column9]"
+                      dataType="wstr"
+                      length="250"
+                      name="Column9" />
+                    <externalMetadataColumn
+                      refId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Output].ExternalColumns[Enrollment_Package1]"
+                      dataType="wstr"
+                      length="250"
+                      name="Enrollment_Package1" />
+                    <externalMetadataColumn
+                      refId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Output].ExternalColumns[IsBeyondContract1]"
+                      dataType="wstr"
+                      length="250"
+                      name="IsBeyondContract1" />
+                    <externalMetadataColumn
+                      refId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Output].ExternalColumns[ATC_POA1]"
+                      dataType="wstr"
+                      length="250"
+                      name="ATC_POA1" />
+                    <externalMetadataColumn
+                      refId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Output].ExternalColumns[Credit_Pull_Auth1]"
+                      dataType="wstr"
+                      length="250"
+                      name="Credit_Pull_Auth1" />
+                    <externalMetadataColumn
+                      refId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Output].ExternalColumns[SPAA1]"
+                      dataType="wstr"
+                      length="250"
+                      name="SPAA1" />
+                    <externalMetadataColumn
+                      refId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Output].ExternalColumns[Docusign_Certificate1]"
+                      dataType="wstr"
+                      length="250"
+                      name="Docusign_Certificate1" />
+                    <externalMetadataColumn
+                      refId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Output].ExternalColumns[Total]"
+                      dataType="wstr"
+                      length="250"
+                      name="Total" />
+                  </externalMetadataColumns>
+                </output>
+                <output
+                  refId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Error Output]"
+                  isErrorOut="true"
+                  name="Excel Source Plus Error Output">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Error Output].Columns[ErrorCode]"
+                      dataType="i4"
+                      lineageId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Error Output].Columns[ErrorCode]"
+                      name="ErrorCode"
+                      specialFlags="1" />
+                    <outputColumn
+                      refId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Error Output].Columns[ErrorColumn]"
+                      dataType="i4"
+                      lineageId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Error Output].Columns[ErrorColumn]"
+                      name="ErrorColumn"
+                      specialFlags="2" />
+                    <outputColumn
+                      refId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Error Output].Columns[ProgramID]"
+                      dataType="wstr"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      length="250"
+                      lineageId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Error Output].Columns[ProgramID]"
+                      name="ProgramID"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Error Output].Columns[ImportDate]"
+                      dataType="wstr"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      length="250"
+                      lineageId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Error Output].Columns[ImportDate]"
+                      name="ImportDate"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Error Output].Columns[Enrollment_Package]"
+                      dataType="wstr"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      length="250"
+                      lineageId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Error Output].Columns[Enrollment_Package]"
+                      name="Enrollment_Package"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Error Output].Columns[IsBeyondContract]"
+                      dataType="wstr"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      length="250"
+                      lineageId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Error Output].Columns[IsBeyondContract]"
+                      name="IsBeyondContract"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Error Output].Columns[ATC_POA]"
+                      dataType="wstr"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      length="250"
+                      lineageId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Error Output].Columns[ATC_POA]"
+                      name="ATC_POA"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Error Output].Columns[Credit_Pull_Auth]"
+                      dataType="wstr"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      length="250"
+                      lineageId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Error Output].Columns[Credit_Pull_Auth]"
+                      name="Credit_Pull_Auth"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Error Output].Columns[SPAA]"
+                      dataType="wstr"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      length="250"
+                      lineageId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Error Output].Columns[SPAA]"
+                      name="SPAA"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Error Output].Columns[Docusign_Certificate]"
+                      dataType="wstr"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      length="250"
+                      lineageId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Error Output].Columns[Docusign_Certificate]"
+                      name="Docusign_Certificate"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Error Output].Columns[Column9]"
+                      dataType="wstr"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      length="250"
+                      lineageId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Error Output].Columns[Column9]"
+                      name="Column9"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Error Output].Columns[Enrollment_Package1]"
+                      dataType="wstr"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      length="250"
+                      lineageId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Error Output].Columns[Enrollment_Package1]"
+                      name="Enrollment_Package1"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Error Output].Columns[IsBeyondContract1]"
+                      dataType="wstr"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      length="250"
+                      lineageId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Error Output].Columns[IsBeyondContract1]"
+                      name="IsBeyondContract1"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Error Output].Columns[ATC_POA1]"
+                      dataType="wstr"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      length="250"
+                      lineageId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Error Output].Columns[ATC_POA1]"
+                      name="ATC_POA1"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Error Output].Columns[Credit_Pull_Auth1]"
+                      dataType="wstr"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      length="250"
+                      lineageId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Error Output].Columns[Credit_Pull_Auth1]"
+                      name="Credit_Pull_Auth1"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Error Output].Columns[SPAA1]"
+                      dataType="wstr"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      length="250"
+                      lineageId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Error Output].Columns[SPAA1]"
+                      name="SPAA1"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Error Output].Columns[Docusign_Certificate1]"
+                      dataType="wstr"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      length="250"
+                      lineageId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Error Output].Columns[Docusign_Certificate1]"
+                      name="Docusign_Certificate1"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Error Output].Columns[Total]"
+                      dataType="wstr"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      length="250"
+                      lineageId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Error Output].Columns[Total]"
+                      name="Total"
+                      truncationRowDisposition="FailComponent" />
+                  </outputColumns>
+                  <externalMetadataColumns />
+                </output>
+              </outputs>
+            </component>
+            <component
+              refId="Package\Get Agent and Manager Data from Excel into STG\Lookup"
+              componentClassID="Microsoft.Lookup"
+              contactInfo="Lookup;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;6"
+              description="Joins additional columns to the data flow by looking up values in a table. For example, join to the 'employee id' column the employees table to get 'hire date' and 'employee name'. We recommend this transformation when the lookup table can fit into memory."
+              name="Lookup"
+              usesDispositions="true"
+              version="6">
+              <properties>
+                <property
+                  dataType="System.String"
+                  description="Specifies the SQL statement that generates the lookup table."
+                  expressionType="Notify"
+                  name="SqlCommand"
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor, Microsoft.DataTransformationServices.Controls, Version=15.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91">select * from [dbo].[stg_AllPrograms]</property>
+                <property
+                  dataType="System.String"
+                  description="Specifies a SQL statement that uses parameters to generate the lookup table."
+                  expressionType="Notify"
+                  name="SqlCommandParam"
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor, Microsoft.DataTransformationServices.Controls, Version=15.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91">select * from (select * from [dbo].[stg_AllPrograms]) [refTable]
+where [refTable].[clietnid] = ?</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the type of connection used to access the reference dataset."
+                  name="ConnectionType"
+                  typeConverter="LookupConnectionType">0</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the cache type of the lookup table."
+                  name="CacheType"
+                  typeConverter="CacheType">2</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies how the Lookup transformation handles rows without matching entries in the reference data set."
+                  name="NoMatchBehavior"
+                  typeConverter="LookupNoMatchBehavior">1</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the percentage of the cache that is allocated for rows with no matching entries in the reference dataset."
+                  name="NoMatchCachePercentage">0</property>
+                <property
+                  dataType="System.Int32"
+                  description="Maximum Memory Usage for Reference Cache on a 32 bit platform."
+                  name="MaxMemoryUsage">25</property>
+                <property
+                  dataType="System.Int64"
+                  description="Maximum Memory Usage for Reference Cache on a 64 bit platform."
+                  name="MaxMemoryUsage64">25</property>
+                <property
+                  dataType="System.String"
+                  description="Indicates whether to reference metadata in an XML format."
+                  name="ReferenceMetadataXml">&lt;referenceMetadata&gt;&lt;referenceColumns&gt;&lt;referenceColumn name="clietnid" dataType="DT_WSTR" length="20" precision="0" scale="0" codePage="0"/&gt;&lt;referenceColumn name="agentname" dataType="DT_WSTR" length="50" precision="0" scale="0" codePage="0"/&gt;&lt;referenceColumn name="salesmanager" dataType="DT_WSTR" length="50" precision="0" scale="0" codePage="0"/&gt;&lt;/referenceColumns&gt;&lt;/referenceMetadata&gt;</property>
+                <property
+                  containsID="true"
+                  dataType="System.String"
+                  description="Specifies the list of lineage identifiers that map to the parameters that the SQL statement in the SQLCommand property uses. Entries in the list are separated by semicolons."
+                  name="ParameterMap">#{Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Output].Columns[ProgramID]};</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the column code page to use when code page information is unavailable from the data source."
+                  name="DefaultCodePage">1252</property>
+                <property
+                  dataType="System.Boolean"
+                  description="Determines whether duplicate keys in the reference data should be treated as errors when full cache mode is used."
+                  name="TreatDuplicateKeysAsError">false</property>
+              </properties>
+              <connections>
+                <connection
+                  refId="Package\Get Agent and Manager Data from Excel into STG\Lookup.Connections[OleDbConnection]"
+                  connectionManagerID="Package.ConnectionManagers[HOU-IT-RSTEWART\SQL2017.BF_Redshift_Staging]"
+                  connectionManagerRefId="Package.ConnectionManagers[HOU-IT-RSTEWART\SQL2017.BF_Redshift_Staging]"
+                  description="Connection manager used to access lookup data."
+                  name="OleDbConnection" />
+              </connections>
+              <inputs>
+                <input
+                  refId="Package\Get Agent and Manager Data from Excel into STG\Lookup.Inputs[Lookup Input]"
+                  name="Lookup Input">
+                  <inputColumns>
+                    <inputColumn
+                      refId="Package\Get Agent and Manager Data from Excel into STG\Lookup.Inputs[Lookup Input].Columns[ProgramID]"
+                      cachedDataType="wstr"
+                      cachedLength="250"
+                      cachedName="ProgramID"
+                      lineageId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Output].Columns[ProgramID]">
+                      <properties>
+                        <property
+                          dataType="System.String"
+                          description="Specifies the column in the reference table that a column joins."
+                          name="JoinToReferenceColumn">clietnid</property>
+                        <property
+                          dataType="System.Null"
+                          description="Specifies the column in the reference table from which a column is copied."
+                          name="CopyFromReferenceColumn" />
+                      </properties>
+                    </inputColumn>
+                  </inputColumns>
+                  <externalMetadataColumns />
+                </input>
+              </inputs>
+              <outputs>
+                <output
+                  refId="Package\Get Agent and Manager Data from Excel into STG\Lookup.Outputs[Lookup Match Output]"
+                  errorOrTruncationOperation="Lookup"
+                  exclusionGroup="1"
+                  name="Lookup Match Output"
+                  synchronousInputId="Package\Get Agent and Manager Data from Excel into STG\Lookup.Inputs[Lookup Input]">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\Get Agent and Manager Data from Excel into STG\Lookup.Outputs[Lookup Match Output].Columns[agentname]"
+                      dataType="wstr"
+                      errorOrTruncationOperation="Copy Column"
+                      length="50"
+                      lineageId="Package\Get Agent and Manager Data from Excel into STG\Lookup.Outputs[Lookup Match Output].Columns[agentname]"
+                      name="agentname"
+                      truncationRowDisposition="FailComponent">
+                      <properties>
+                        <property
+                          dataType="System.String"
+                          description="Specifies the column in the reference table from which a column is copied."
+                          name="CopyFromReferenceColumn">agentname</property>
+                      </properties>
+                    </outputColumn>
+                    <outputColumn
+                      refId="Package\Get Agent and Manager Data from Excel into STG\Lookup.Outputs[Lookup Match Output].Columns[salesmanager]"
+                      dataType="wstr"
+                      errorOrTruncationOperation="Copy Column"
+                      length="50"
+                      lineageId="Package\Get Agent and Manager Data from Excel into STG\Lookup.Outputs[Lookup Match Output].Columns[salesmanager]"
+                      name="salesmanager"
+                      truncationRowDisposition="FailComponent">
+                      <properties>
+                        <property
+                          dataType="System.String"
+                          description="Specifies the column in the reference table from which a column is copied."
+                          name="CopyFromReferenceColumn">salesmanager</property>
+                      </properties>
+                    </outputColumn>
+                  </outputColumns>
+                  <externalMetadataColumns />
+                </output>
+                <output
+                  refId="Package\Get Agent and Manager Data from Excel into STG\Lookup.Outputs[Lookup No Match Output]"
+                  description="The Lookup output that handles rows with no matching entries in the reference dataset. Use this output when the NoMatchBehavior property is set to &quot;Send rows with no matching entries to the no match output.&quot;"
+                  exclusionGroup="1"
+                  name="Lookup No Match Output"
+                  synchronousInputId="Package\Get Agent and Manager Data from Excel into STG\Lookup.Inputs[Lookup Input]">
+                  <externalMetadataColumns />
+                </output>
+                <output
+                  refId="Package\Get Agent and Manager Data from Excel into STG\Lookup.Outputs[Lookup Error Output]"
+                  exclusionGroup="1"
+                  isErrorOut="true"
+                  name="Lookup Error Output"
+                  synchronousInputId="Package\Get Agent and Manager Data from Excel into STG\Lookup.Inputs[Lookup Input]">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\Get Agent and Manager Data from Excel into STG\Lookup.Outputs[Lookup Error Output].Columns[ErrorCode]"
+                      dataType="i4"
+                      lineageId="Package\Get Agent and Manager Data from Excel into STG\Lookup.Outputs[Lookup Error Output].Columns[ErrorCode]"
+                      name="ErrorCode"
+                      specialFlags="1" />
+                    <outputColumn
+                      refId="Package\Get Agent and Manager Data from Excel into STG\Lookup.Outputs[Lookup Error Output].Columns[ErrorColumn]"
+                      dataType="i4"
+                      lineageId="Package\Get Agent and Manager Data from Excel into STG\Lookup.Outputs[Lookup Error Output].Columns[ErrorColumn]"
+                      name="ErrorColumn"
+                      specialFlags="2" />
+                  </outputColumns>
+                  <externalMetadataColumns />
+                </output>
+              </outputs>
+            </component>
+            <component
+              refId="Package\Get Agent and Manager Data from Excel into STG\OLE DB Destination"
+              componentClassID="Microsoft.OLEDBDestination"
+              contactInfo="OLE DB Destination;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;4"
+              description="OLE DB Destination"
+              name="OLE DB Destination"
+              usesDispositions="true"
+              validateExternalMetadata="False"
+              version="4">
+              <properties>
+                <property
+                  dataType="System.Int32"
+                  description="The number of seconds before a command times out.  A value of 0 indicates an infinite time-out."
+                  name="CommandTimeout">0</property>
+                <property
+                  dataType="System.String"
+                  description="Specifies the name of the database object used to open a rowset."
+                  name="OpenRowset">[dbo].[stg_ClearOne_MissingData]</property>
+                <property
+                  dataType="System.String"
+                  description="Specifies the variable that contains the name of the database object used to open a rowset."
+                  name="OpenRowsetVariable"></property>
+                <property
+                  dataType="System.String"
+                  description="The SQL command to be executed."
+                  name="SqlCommand"
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor, Microsoft.DataTransformationServices.Controls, Version=15.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91"></property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the column code page to use when code page information is unavailable from the data source."
+                  name="DefaultCodePage">1252</property>
+                <property
+                  dataType="System.Boolean"
+                  description="Forces the use of the DefaultCodePage property value when describing character data."
+                  name="AlwaysUseDefaultCodePage">false</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the mode used to access the database."
+                  name="AccessMode"
+                  typeConverter="AccessMode">3</property>
+                <property
+                  dataType="System.Boolean"
+                  description="Indicates whether the values supplied for identity columns will be copied to the destination. If false, values for identity columns will be auto-generated at the destination. Applies only if fast load is turned on."
+                  name="FastLoadKeepIdentity">false</property>
+                <property
+                  dataType="System.Boolean"
+                  description="Indicates whether the columns containing null will have null inserted in the destination. If false, columns containing null will have their default values inserted at the destination. Applies only if fast load is turned on."
+                  name="FastLoadKeepNulls">false</property>
+                <property
+                  dataType="System.String"
+                  description="Specifies options to be used with fast load.  Applies only if fast load is turned on."
+                  name="FastLoadOptions">TABLOCK,CHECK_CONSTRAINTS</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies when commits are issued during data insertion.  A value of 0 specifies that one commit will be issued at the end of data insertion.  Applies only if fast load is turned on."
+                  name="FastLoadMaxInsertCommitSize">2147483647</property>
+              </properties>
+              <connections>
+                <connection
+                  refId="Package\Get Agent and Manager Data from Excel into STG\OLE DB Destination.Connections[OleDbConnection]"
+                  connectionManagerID="Package.ConnectionManagers[HOU-IT-RSTEWART\SQL2017.BF_Redshift_Staging]"
+                  connectionManagerRefId="Package.ConnectionManagers[HOU-IT-RSTEWART\SQL2017.BF_Redshift_Staging]"
+                  description="The OLE DB runtime connection used to access the database."
+                  name="OleDbConnection" />
+              </connections>
+              <inputs>
+                <input
+                  refId="Package\Get Agent and Manager Data from Excel into STG\OLE DB Destination.Inputs[OLE DB Destination Input]"
+                  errorOrTruncationOperation="Insert"
+                  errorRowDisposition="FailComponent"
+                  hasSideEffects="true"
+                  name="OLE DB Destination Input">
+                  <inputColumns>
+                    <inputColumn
+                      refId="Package\Get Agent and Manager Data from Excel into STG\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[ProgramID]"
+                      cachedDataType="wstr"
+                      cachedLength="250"
+                      cachedName="ProgramID"
+                      externalMetadataColumnId="Package\Get Agent and Manager Data from Excel into STG\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[ProgramID]"
+                      lineageId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Output].Columns[ProgramID]" />
+                    <inputColumn
+                      refId="Package\Get Agent and Manager Data from Excel into STG\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[ImportDate]"
+                      cachedDataType="wstr"
+                      cachedLength="250"
+                      cachedName="ImportDate"
+                      externalMetadataColumnId="Package\Get Agent and Manager Data from Excel into STG\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[ImportDate]"
+                      lineageId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Output].Columns[ImportDate]" />
+                    <inputColumn
+                      refId="Package\Get Agent and Manager Data from Excel into STG\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[Enrollment_Package]"
+                      cachedDataType="wstr"
+                      cachedLength="250"
+                      cachedName="Enrollment_Package"
+                      externalMetadataColumnId="Package\Get Agent and Manager Data from Excel into STG\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[Enrollment_Package]"
+                      lineageId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Output].Columns[Enrollment_Package]" />
+                    <inputColumn
+                      refId="Package\Get Agent and Manager Data from Excel into STG\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[IsBeyondContract]"
+                      cachedDataType="wstr"
+                      cachedLength="250"
+                      cachedName="IsBeyondContract"
+                      externalMetadataColumnId="Package\Get Agent and Manager Data from Excel into STG\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[IsBeyondContract]"
+                      lineageId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Output].Columns[IsBeyondContract]" />
+                    <inputColumn
+                      refId="Package\Get Agent and Manager Data from Excel into STG\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[ATC_POA]"
+                      cachedDataType="wstr"
+                      cachedLength="250"
+                      cachedName="ATC_POA"
+                      externalMetadataColumnId="Package\Get Agent and Manager Data from Excel into STG\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[ATC_POA]"
+                      lineageId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Output].Columns[ATC_POA]" />
+                    <inputColumn
+                      refId="Package\Get Agent and Manager Data from Excel into STG\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[Credit_Pull_Auth]"
+                      cachedDataType="wstr"
+                      cachedLength="250"
+                      cachedName="Credit_Pull_Auth"
+                      externalMetadataColumnId="Package\Get Agent and Manager Data from Excel into STG\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[Credit_Pull_Auth]"
+                      lineageId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Output].Columns[Credit_Pull_Auth]" />
+                    <inputColumn
+                      refId="Package\Get Agent and Manager Data from Excel into STG\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[SPAA]"
+                      cachedDataType="wstr"
+                      cachedLength="250"
+                      cachedName="SPAA"
+                      externalMetadataColumnId="Package\Get Agent and Manager Data from Excel into STG\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[SPAA]"
+                      lineageId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Output].Columns[SPAA]" />
+                    <inputColumn
+                      refId="Package\Get Agent and Manager Data from Excel into STG\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[Docusign_Certificate]"
+                      cachedDataType="wstr"
+                      cachedLength="250"
+                      cachedName="Docusign_Certificate"
+                      externalMetadataColumnId="Package\Get Agent and Manager Data from Excel into STG\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[Docusign_Certificate]"
+                      lineageId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Output].Columns[Docusign_Certificate]" />
+                    <inputColumn
+                      refId="Package\Get Agent and Manager Data from Excel into STG\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[agentname]"
+                      cachedDataType="wstr"
+                      cachedLength="50"
+                      cachedName="agentname"
+                      externalMetadataColumnId="Package\Get Agent and Manager Data from Excel into STG\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[SalesAgent]"
+                      lineageId="Package\Get Agent and Manager Data from Excel into STG\Lookup.Outputs[Lookup Match Output].Columns[agentname]" />
+                    <inputColumn
+                      refId="Package\Get Agent and Manager Data from Excel into STG\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[salesmanager]"
+                      cachedDataType="wstr"
+                      cachedLength="50"
+                      cachedName="salesmanager"
+                      externalMetadataColumnId="Package\Get Agent and Manager Data from Excel into STG\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[SalesAgentManager]"
+                      lineageId="Package\Get Agent and Manager Data from Excel into STG\Lookup.Outputs[Lookup Match Output].Columns[salesmanager]" />
+                  </inputColumns>
+                  <externalMetadataColumns
+                    isUsed="True">
+                    <externalMetadataColumn
+                      refId="Package\Get Agent and Manager Data from Excel into STG\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[ProgramID]"
+                      dataType="wstr"
+                      length="20"
+                      name="ProgramID" />
+                    <externalMetadataColumn
+                      refId="Package\Get Agent and Manager Data from Excel into STG\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[ImportDate]"
+                      dataType="dbDate"
+                      name="ImportDate" />
+                    <externalMetadataColumn
+                      refId="Package\Get Agent and Manager Data from Excel into STG\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[Enrollment_Package]"
+                      dataType="bool"
+                      name="Enrollment_Package" />
+                    <externalMetadataColumn
+                      refId="Package\Get Agent and Manager Data from Excel into STG\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[IsBeyondContract]"
+                      dataType="bool"
+                      name="IsBeyondContract" />
+                    <externalMetadataColumn
+                      refId="Package\Get Agent and Manager Data from Excel into STG\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[ATC_POA]"
+                      dataType="bool"
+                      name="ATC_POA" />
+                    <externalMetadataColumn
+                      refId="Package\Get Agent and Manager Data from Excel into STG\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[Credit_Pull_Auth]"
+                      dataType="bool"
+                      name="Credit_Pull_Auth" />
+                    <externalMetadataColumn
+                      refId="Package\Get Agent and Manager Data from Excel into STG\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[SPAA]"
+                      dataType="bool"
+                      name="SPAA" />
+                    <externalMetadataColumn
+                      refId="Package\Get Agent and Manager Data from Excel into STG\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[Docusign_Certificate]"
+                      dataType="bool"
+                      name="Docusign_Certificate" />
+                    <externalMetadataColumn
+                      refId="Package\Get Agent and Manager Data from Excel into STG\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[SalesAgent]"
+                      dataType="wstr"
+                      length="50"
+                      name="SalesAgent" />
+                    <externalMetadataColumn
+                      refId="Package\Get Agent and Manager Data from Excel into STG\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[SalesAgentManager]"
+                      dataType="wstr"
+                      length="50"
+                      name="SalesAgentManager" />
+                  </externalMetadataColumns>
+                </input>
+              </inputs>
+              <outputs>
+                <output
+                  refId="Package\Get Agent and Manager Data from Excel into STG\OLE DB Destination.Outputs[OLE DB Destination Error Output]"
+                  exclusionGroup="1"
+                  isErrorOut="true"
+                  name="OLE DB Destination Error Output"
+                  synchronousInputId="Package\Get Agent and Manager Data from Excel into STG\OLE DB Destination.Inputs[OLE DB Destination Input]">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\Get Agent and Manager Data from Excel into STG\OLE DB Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorCode]"
+                      dataType="i4"
+                      lineageId="Package\Get Agent and Manager Data from Excel into STG\OLE DB Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorCode]"
+                      name="ErrorCode"
+                      specialFlags="1" />
+                    <outputColumn
+                      refId="Package\Get Agent and Manager Data from Excel into STG\OLE DB Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorColumn]"
+                      dataType="i4"
+                      lineageId="Package\Get Agent and Manager Data from Excel into STG\OLE DB Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorColumn]"
+                      name="ErrorColumn"
+                      specialFlags="2" />
+                  </outputColumns>
+                  <externalMetadataColumns />
+                </output>
+              </outputs>
+            </component>
+          </components>
+          <paths>
+            <path
+              refId="Package\Get Agent and Manager Data from Excel into STG.Paths[Excel Source Plus Output]"
+              endId="Package\Get Agent and Manager Data from Excel into STG\Lookup.Inputs[Lookup Input]"
+              name="Excel Source Plus Output"
+              startId="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus.Outputs[Excel Source Plus Output]" />
+            <path
+              refId="Package\Get Agent and Manager Data from Excel into STG.Paths[Lookup Match Output]"
+              endId="Package\Get Agent and Manager Data from Excel into STG\OLE DB Destination.Inputs[OLE DB Destination Input]"
+              name="Lookup Match Output"
+              startId="Package\Get Agent and Manager Data from Excel into STG\Lookup.Outputs[Lookup Match Output]" />
+          </paths>
+        </pipeline>
+      </DTS:ObjectData>
+    </DTS:Executable>
+    <DTS:Executable
+      DTS:refId="Package\Recreate List of All programs with Sales Agent and Sales Agent Manager"
+      DTS:CreationName="Microsoft.Pipeline"
+      DTS:Description="Data Flow Task"
+      DTS:DTSID="{885AD2DB-E39D-4263-B15E-19EB9B1E78F8}"
+      DTS:ExecutableType="Microsoft.Pipeline"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Recreate List of All programs with Sales Agent and Sales Agent Manager"
+      DTS:TaskContact="Performs high-performance data extraction, transformation and loading;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <pipeline
+          version="1">
+          <components>
+            <component
+              refId="Package\Recreate List of All programs with Sales Agent and Sales Agent Manager\ODBC Source"
+              componentClassID="Attunity.SSISODBCSrc"
+              description="ODBC Source"
+              name="ODBC Source"
+              usesDispositions="true"
+              version="7">
+              <properties>
+                <property
+                  dataType="System.String"
+                  description="The name of the table to be fetched."
+                  expressionType="Notify"
+                  name="TableName"></property>
+                <property
+                  dataType="System.String"
+                  description="The SQL command to be executed."
+                  expressionType="Notify"
+                  name="SqlCommand"
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor, Microsoft.DataTransformationServices.Controls, Version=15.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91">SELECT cast(p.name as varchar(20))                             as ProgramID
+     , cast(p.salesperson__c as varchar(50))                   as ExternalSalesAgent
+     , cast(mgr.firstname + ' ' + mgr.lastname as varchar(50)) AS ExternalSalesAgentMgr
+FROM datalake_sf.sf_nu_dse_program_c_src p
+         inner join datalake_sf.sf_user_src u on p.salesperson_id__c = u.id
+         left outer join datalake_sf.sf_user_src mgr on u.beyond_manager__c = mgr.id
+WHERE p.enrolled_state__c IN ('PA', 'ID', 'UT', 'MS', 'TN', 'IA', 'NV', 'LA')
+order by cast(p.name as varchar(20))</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specify the number of rows fetched per batch."
+                  expressionType="Notify"
+                  name="BatchSize">1000</property>
+                <property
+                  dataType="System.Int32"
+                  description="Determines the chunk size allocation for LOB columns"
+                  expressionType="Notify"
+                  name="LobChunkSize">32768</property>
+                <property
+                  dataType="System.Boolean"
+                  description="Determines how the component exposes CHAR columns. If False, CHAR columns are exposed as (multi-)byte strings (DT_STR), if True, CHAR columns are exposed as wide strings (DT_WSTR)"
+                  expressionType="Notify"
+                  name="ExposeCharColumnsAsUnicode">false</property>
+                <property
+                  dataType="System.Int32"
+                  description="The number of seconds to wait for an SQL statement to execute before returning to the application."
+                  expressionType="Notify"
+                  name="StatementTimeout">0</property>
+                <property
+                  dataType="System.Int32"
+                  description="The code page to use when code page information is unavailable from the data source."
+                  expressionType="Notify"
+                  name="DefaultCodePage">1252</property>
+                <property
+                  dataType="System.Int32"
+                  description="The method used for fetching data."
+                  expressionType="Notify"
+                  name="FetchMethod">1</property>
+                <property
+                  dataType="System.Int32"
+                  description="The ODBC C data type for binding numeric data."
+                  expressionType="Notify"
+                  name="BindNumericAs">0</property>
+                <property
+                  dataType="System.Int32"
+                  description="Determines how the component would bind columns of (multi)-byte string types (i.e., SQL_CHAR, SQL_VARCHAR, SQL_LONGVARCHAR). The options are: Unicode (SQL_C_WCHAR) and ANSI (SQL_C_CHAR)."
+                  expressionType="Notify"
+                  name="BindCharColumnsAs">0</property>
+                <property
+                  dataType="System.Int32"
+                  description="The mode used to access the database."
+                  expressionType="Notify"
+                  name="AccessMode"
+                  typeConverter="AccessMode">1</property>
+              </properties>
+              <connections>
+                <connection
+                  refId="Package\Recreate List of All programs with Sales Agent and Sales Agent Manager\ODBC Source.Connections[ODBCConnection]"
+                  connectionManagerID="Package.ConnectionManagers[BF_Redsift_Prod.rstewart]"
+                  connectionManagerRefId="Package.ConnectionManagers[BF_Redsift_Prod.rstewart]"
+                  description="The ODBC runtime connection used to access the database."
+                  name="ODBCConnection" />
+              </connections>
+              <outputs>
+                <output
+                  refId="Package\Recreate List of All programs with Sales Agent and Sales Agent Manager\ODBC Source.Outputs[ODBC Source Output]"
+                  errorRowDisposition="FailComponent"
+                  name="ODBC Source Output"
+                  truncationRowDisposition="FailComponent">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\Recreate List of All programs with Sales Agent and Sales Agent Manager\ODBC Source.Outputs[ODBC Source Output].Columns[programid]"
+                      dataType="wstr"
+                      externalMetadataColumnId="Package\Recreate List of All programs with Sales Agent and Sales Agent Manager\ODBC Source.Outputs[ODBC Source Output].ExternalColumns[programid]"
+                      length="20"
+                      lineageId="Package\Recreate List of All programs with Sales Agent and Sales Agent Manager\ODBC Source.Outputs[ODBC Source Output].Columns[programid]"
+                      name="programid" />
+                    <outputColumn
+                      refId="Package\Recreate List of All programs with Sales Agent and Sales Agent Manager\ODBC Source.Outputs[ODBC Source Output].Columns[externalsalesagent]"
+                      dataType="wstr"
+                      externalMetadataColumnId="Package\Recreate List of All programs with Sales Agent and Sales Agent Manager\ODBC Source.Outputs[ODBC Source Output].ExternalColumns[externalsalesagent]"
+                      length="50"
+                      lineageId="Package\Recreate List of All programs with Sales Agent and Sales Agent Manager\ODBC Source.Outputs[ODBC Source Output].Columns[externalsalesagent]"
+                      name="externalsalesagent" />
+                    <outputColumn
+                      refId="Package\Recreate List of All programs with Sales Agent and Sales Agent Manager\ODBC Source.Outputs[ODBC Source Output].Columns[externalsalesagentmgr]"
+                      dataType="wstr"
+                      externalMetadataColumnId="Package\Recreate List of All programs with Sales Agent and Sales Agent Manager\ODBC Source.Outputs[ODBC Source Output].ExternalColumns[externalsalesagentmgr]"
+                      length="50"
+                      lineageId="Package\Recreate List of All programs with Sales Agent and Sales Agent Manager\ODBC Source.Outputs[ODBC Source Output].Columns[externalsalesagentmgr]"
+                      name="externalsalesagentmgr" />
+                  </outputColumns>
+                  <externalMetadataColumns
+                    isUsed="True">
+                    <externalMetadataColumn
+                      refId="Package\Recreate List of All programs with Sales Agent and Sales Agent Manager\ODBC Source.Outputs[ODBC Source Output].ExternalColumns[programid]"
+                      dataType="wstr"
+                      length="20"
+                      name="programid" />
+                    <externalMetadataColumn
+                      refId="Package\Recreate List of All programs with Sales Agent and Sales Agent Manager\ODBC Source.Outputs[ODBC Source Output].ExternalColumns[externalsalesagent]"
+                      dataType="wstr"
+                      length="50"
+                      name="externalsalesagent" />
+                    <externalMetadataColumn
+                      refId="Package\Recreate List of All programs with Sales Agent and Sales Agent Manager\ODBC Source.Outputs[ODBC Source Output].ExternalColumns[externalsalesagentmgr]"
+                      dataType="wstr"
+                      length="50"
+                      name="externalsalesagentmgr" />
+                  </externalMetadataColumns>
+                </output>
+                <output
+                  refId="Package\Recreate List of All programs with Sales Agent and Sales Agent Manager\ODBC Source.Outputs[ODBC Source Error Output]"
+                  isErrorOut="true"
+                  name="ODBC Source Error Output">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\Recreate List of All programs with Sales Agent and Sales Agent Manager\ODBC Source.Outputs[ODBC Source Error Output].Columns[programid]"
+                      dataType="wstr"
+                      externalMetadataColumnId="Package\Recreate List of All programs with Sales Agent and Sales Agent Manager\ODBC Source.Outputs[ODBC Source Output].ExternalColumns[programid]"
+                      length="20"
+                      lineageId="Package\Recreate List of All programs with Sales Agent and Sales Agent Manager\ODBC Source.Outputs[ODBC Source Error Output].Columns[programid]"
+                      name="programid" />
+                    <outputColumn
+                      refId="Package\Recreate List of All programs with Sales Agent and Sales Agent Manager\ODBC Source.Outputs[ODBC Source Error Output].Columns[externalsalesagent]"
+                      dataType="wstr"
+                      externalMetadataColumnId="Package\Recreate List of All programs with Sales Agent and Sales Agent Manager\ODBC Source.Outputs[ODBC Source Output].ExternalColumns[externalsalesagent]"
+                      length="50"
+                      lineageId="Package\Recreate List of All programs with Sales Agent and Sales Agent Manager\ODBC Source.Outputs[ODBC Source Error Output].Columns[externalsalesagent]"
+                      name="externalsalesagent" />
+                    <outputColumn
+                      refId="Package\Recreate List of All programs with Sales Agent and Sales Agent Manager\ODBC Source.Outputs[ODBC Source Error Output].Columns[externalsalesagentmgr]"
+                      dataType="wstr"
+                      externalMetadataColumnId="Package\Recreate List of All programs with Sales Agent and Sales Agent Manager\ODBC Source.Outputs[ODBC Source Output].ExternalColumns[externalsalesagentmgr]"
+                      length="50"
+                      lineageId="Package\Recreate List of All programs with Sales Agent and Sales Agent Manager\ODBC Source.Outputs[ODBC Source Error Output].Columns[externalsalesagentmgr]"
+                      name="externalsalesagentmgr" />
+                    <outputColumn
+                      refId="Package\Recreate List of All programs with Sales Agent and Sales Agent Manager\ODBC Source.Outputs[ODBC Source Error Output].Columns[ErrorCode]"
+                      dataType="i4"
+                      lineageId="Package\Recreate List of All programs with Sales Agent and Sales Agent Manager\ODBC Source.Outputs[ODBC Source Error Output].Columns[ErrorCode]"
+                      name="ErrorCode"
+                      specialFlags="1" />
+                    <outputColumn
+                      refId="Package\Recreate List of All programs with Sales Agent and Sales Agent Manager\ODBC Source.Outputs[ODBC Source Error Output].Columns[ErrorColumn]"
+                      dataType="i4"
+                      lineageId="Package\Recreate List of All programs with Sales Agent and Sales Agent Manager\ODBC Source.Outputs[ODBC Source Error Output].Columns[ErrorColumn]"
+                      name="ErrorColumn"
+                      specialFlags="2" />
+                  </outputColumns>
+                  <externalMetadataColumns />
+                </output>
+              </outputs>
+            </component>
+            <component
+              refId="Package\Recreate List of All programs with Sales Agent and Sales Agent Manager\OLE DB Destination"
+              componentClassID="Microsoft.OLEDBDestination"
+              contactInfo="OLE DB Destination;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;4"
+              description="OLE DB Destination"
+              name="OLE DB Destination"
+              usesDispositions="true"
+              version="4">
+              <properties>
+                <property
+                  dataType="System.Int32"
+                  description="The number of seconds before a command times out.  A value of 0 indicates an infinite time-out."
+                  name="CommandTimeout">0</property>
+                <property
+                  dataType="System.String"
+                  description="Specifies the name of the database object used to open a rowset."
+                  name="OpenRowset">[dbo].[stg_AllPrograms]</property>
+                <property
+                  dataType="System.String"
+                  description="Specifies the variable that contains the name of the database object used to open a rowset."
+                  name="OpenRowsetVariable"></property>
+                <property
+                  dataType="System.String"
+                  description="The SQL command to be executed."
+                  name="SqlCommand"
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor, Microsoft.DataTransformationServices.Controls, Version=15.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91"></property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the column code page to use when code page information is unavailable from the data source."
+                  name="DefaultCodePage">1252</property>
+                <property
+                  dataType="System.Boolean"
+                  description="Forces the use of the DefaultCodePage property value when describing character data."
+                  name="AlwaysUseDefaultCodePage">false</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the mode used to access the database."
+                  name="AccessMode"
+                  typeConverter="AccessMode">3</property>
+                <property
+                  dataType="System.Boolean"
+                  description="Indicates whether the values supplied for identity columns will be copied to the destination. If false, values for identity columns will be auto-generated at the destination. Applies only if fast load is turned on."
+                  name="FastLoadKeepIdentity">false</property>
+                <property
+                  dataType="System.Boolean"
+                  description="Indicates whether the columns containing null will have null inserted in the destination. If false, columns containing null will have their default values inserted at the destination. Applies only if fast load is turned on."
+                  name="FastLoadKeepNulls">false</property>
+                <property
+                  dataType="System.String"
+                  description="Specifies options to be used with fast load.  Applies only if fast load is turned on."
+                  name="FastLoadOptions">TABLOCK,CHECK_CONSTRAINTS</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies when commits are issued during data insertion.  A value of 0 specifies that one commit will be issued at the end of data insertion.  Applies only if fast load is turned on."
+                  name="FastLoadMaxInsertCommitSize">2147483647</property>
+              </properties>
+              <connections>
+                <connection
+                  refId="Package\Recreate List of All programs with Sales Agent and Sales Agent Manager\OLE DB Destination.Connections[OleDbConnection]"
+                  connectionManagerID="Package.ConnectionManagers[HOU-IT-RSTEWART\SQL2017.BF_Redshift_Staging]"
+                  connectionManagerRefId="Package.ConnectionManagers[HOU-IT-RSTEWART\SQL2017.BF_Redshift_Staging]"
+                  description="The OLE DB runtime connection used to access the database."
+                  name="OleDbConnection" />
+              </connections>
+              <inputs>
+                <input
+                  refId="Package\Recreate List of All programs with Sales Agent and Sales Agent Manager\OLE DB Destination.Inputs[OLE DB Destination Input]"
+                  errorOrTruncationOperation="Insert"
+                  errorRowDisposition="FailComponent"
+                  hasSideEffects="true"
+                  name="OLE DB Destination Input">
+                  <inputColumns>
+                    <inputColumn
+                      refId="Package\Recreate List of All programs with Sales Agent and Sales Agent Manager\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[programid]"
+                      cachedDataType="wstr"
+                      cachedLength="20"
+                      cachedName="programid"
+                      externalMetadataColumnId="Package\Recreate List of All programs with Sales Agent and Sales Agent Manager\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[clietnid]"
+                      lineageId="Package\Recreate List of All programs with Sales Agent and Sales Agent Manager\ODBC Source.Outputs[ODBC Source Output].Columns[programid]" />
+                    <inputColumn
+                      refId="Package\Recreate List of All programs with Sales Agent and Sales Agent Manager\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[externalsalesagent]"
+                      cachedDataType="wstr"
+                      cachedLength="50"
+                      cachedName="externalsalesagent"
+                      externalMetadataColumnId="Package\Recreate List of All programs with Sales Agent and Sales Agent Manager\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[agentname]"
+                      lineageId="Package\Recreate List of All programs with Sales Agent and Sales Agent Manager\ODBC Source.Outputs[ODBC Source Output].Columns[externalsalesagent]" />
+                    <inputColumn
+                      refId="Package\Recreate List of All programs with Sales Agent and Sales Agent Manager\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[externalsalesagentmgr]"
+                      cachedDataType="wstr"
+                      cachedLength="50"
+                      cachedName="externalsalesagentmgr"
+                      externalMetadataColumnId="Package\Recreate List of All programs with Sales Agent and Sales Agent Manager\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[salesmanager]"
+                      lineageId="Package\Recreate List of All programs with Sales Agent and Sales Agent Manager\ODBC Source.Outputs[ODBC Source Output].Columns[externalsalesagentmgr]" />
+                  </inputColumns>
+                  <externalMetadataColumns
+                    isUsed="True">
+                    <externalMetadataColumn
+                      refId="Package\Recreate List of All programs with Sales Agent and Sales Agent Manager\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[clietnid]"
+                      dataType="wstr"
+                      length="20"
+                      name="clietnid" />
+                    <externalMetadataColumn
+                      refId="Package\Recreate List of All programs with Sales Agent and Sales Agent Manager\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[agentname]"
+                      dataType="wstr"
+                      length="50"
+                      name="agentname" />
+                    <externalMetadataColumn
+                      refId="Package\Recreate List of All programs with Sales Agent and Sales Agent Manager\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[salesmanager]"
+                      dataType="wstr"
+                      length="50"
+                      name="salesmanager" />
+                  </externalMetadataColumns>
+                </input>
+              </inputs>
+              <outputs>
+                <output
+                  refId="Package\Recreate List of All programs with Sales Agent and Sales Agent Manager\OLE DB Destination.Outputs[OLE DB Destination Error Output]"
+                  exclusionGroup="1"
+                  isErrorOut="true"
+                  name="OLE DB Destination Error Output"
+                  synchronousInputId="Package\Recreate List of All programs with Sales Agent and Sales Agent Manager\OLE DB Destination.Inputs[OLE DB Destination Input]">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\Recreate List of All programs with Sales Agent and Sales Agent Manager\OLE DB Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorCode]"
+                      dataType="i4"
+                      lineageId="Package\Recreate List of All programs with Sales Agent and Sales Agent Manager\OLE DB Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorCode]"
+                      name="ErrorCode"
+                      specialFlags="1" />
+                    <outputColumn
+                      refId="Package\Recreate List of All programs with Sales Agent and Sales Agent Manager\OLE DB Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorColumn]"
+                      dataType="i4"
+                      lineageId="Package\Recreate List of All programs with Sales Agent and Sales Agent Manager\OLE DB Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorColumn]"
+                      name="ErrorColumn"
+                      specialFlags="2" />
+                  </outputColumns>
+                  <externalMetadataColumns />
+                </output>
+              </outputs>
+            </component>
+          </components>
+          <paths>
+            <path
+              refId="Package\Recreate List of All programs with Sales Agent and Sales Agent Manager.Paths[ODBC Source Output]"
+              endId="Package\Recreate List of All programs with Sales Agent and Sales Agent Manager\OLE DB Destination.Inputs[OLE DB Destination Input]"
+              name="ODBC Source Output"
+              startId="Package\Recreate List of All programs with Sales Agent and Sales Agent Manager\ODBC Source.Outputs[ODBC Source Output]" />
+          </paths>
+        </pipeline>
+      </DTS:ObjectData>
+    </DTS:Executable>
+    <DTS:Executable
+      DTS:refId="Package\Send Mail Task Plus"
+      DTS:CreationName="CozyRoc.SendMailTask"
+      DTS:Description="Send Mail Task Plus"
+      DTS:DTSID="{5238C75D-A157-4D8A-B15C-56A49101556B}"
+      DTS:ExecutableType="CozyRoc.SendMailTask"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Send Mail Task Plus"
+      DTS:ThreadHint="0">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <SendMailData
+          StopOnFailure="True"
+          IsNewMail="True"
+          From="Beyond.Finance.SSIS@beyondfinance.com"
+          IsSubjectVariable="False"
+          Subject="Missing Document Inventory"
+          ToSource="DirectInput"
+          To="jshshani@beyondfinance.com&#xA;rmathews@beyondtech.com&#xA;camman@beyondfinance.com&#xA;syorke@beyondfinance.com"
+          CcSource="DirectInput"
+          Cc=""
+          BccSource="DirectInput"
+          Bcc=""
+          HeadersSource="DirectInput"
+          Headers="Document Inventory"
+          BodyTextSource="DirectInput"
+          BodyText="Attached is the missing document invrentory with the External sales agent and manager included."
+          BodyHtmlSource="DirectInput"
+          BodyHtml=""
+          Priority="Normal"
+          IsAttachmentVariable="False"
+          Attachment="C:\SSIS_Development\DocumentInventoryReport\Files\Export\MissingDocumentInventory.xlsx"
+          IsSourceVariable="False"
+          Source=""
+          RemoveSource="False"
+          IsSigned="False"
+          IsPrivateKeyVariable="False"
+          PrivateKey=""
+          IsEncrypted="False"
+          IsCertificateVariable="False"
+          Certificate=""
+          Delivery="Server"
+          IsTargetVariable="False"
+          Target="{AC0E2C63-8BFB-48A0-B595-879EEA0465EB}"
+          OverwriteExisting="True" />
+      </DTS:ObjectData>
+    </DTS:Executable>
+    <DTS:Executable
+      DTS:refId="Package\Take STG and run out to Excel file"
+      DTS:CreationName="Microsoft.Pipeline"
+      DTS:Description="Data Flow Task"
+      DTS:DTSID="{7BEEBAA4-0FAD-49DB-BBD2-39C87BD4C0DB}"
+      DTS:ExecutableType="Microsoft.Pipeline"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Take STG and run out to Excel file"
+      DTS:TaskContact="Performs high-performance data extraction, transformation and loading;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <pipeline
+          version="1">
+          <components>
+            <component
+              refId="Package\Take STG and run out to Excel file\Excel Destination Plus"
+              componentClassID="Microsoft.ManagedComponentHost"
+              contactInfo="Inserts data into Excel worksheet.; COZYROC LLC; SSIS+; © 2006-2019 COZYROC LLC; All Rights Reserved; http://www.cozyroc.com/;0"
+              description="Inserts data into Excel worksheet."
+              name="Excel Destination Plus"
+              usesDispositions="true">
+              <properties>
+                <property
+                  dataType="System.Null"
+                  name="ComponentObject"
+                  typeConverter="NOTBROWSABLE" />
+                <property
+                  dataType="System.String"
+                  description="Destination Excel worksheet."
+                  expressionType="Notify"
+                  name="Worksheet"
+                  typeConverter="CozyRoc.SqlServer.SSIS.TableEditor">Sheet1</property>
+                <property
+                  dataType="System.Boolean"
+                  description="Specifies first row contains column names."
+                  name="FirstRowHasColumnName">true</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies destination first column. The value is 1-based."
+                  expressionType="Notify"
+                  name="StartColumn">1</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies destination first row. The value is 1-based."
+                  expressionType="Notify"
+                  name="StartRow">1</property>
+                <property
+                  dataType="System.Boolean"
+                  description="Specifies to save Excel workbook at end."
+                  name="SaveAtEnd">true</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies input type."
+                  name="InputType"
+                  typeConverter="CozyRoc.SqlServer.SSIS.ExcelDestination+InputTypes">0</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies how to handle existing data."
+                  name="ExistingData"
+                  typeConverter="CozyRoc.SqlServer.SSIS.ExcelDestination+ExistingDataTypes">0</property>
+                <property
+                  dataType="System.String"
+                  name="UserComponentTypeName">CozyRoc.ExcelDestination</property>
+              </properties>
+              <connections>
+                <connection
+                  refId="Package\Take STG and run out to Excel file\Excel Destination Plus.Connections[EXCEL+]"
+                  connectionManagerID="Package.ConnectionManagers[Excel Connection Manager 1]"
+                  connectionManagerRefId="Package.ConnectionManagers[Excel Connection Manager 1]"
+                  description="COZYROC Excel Connection Manager"
+                  name="EXCEL+" />
+              </connections>
+              <inputs>
+                <input
+                  refId="Package\Take STG and run out to Excel file\Excel Destination Plus.Inputs[Excel Destination Plus Input]"
+                  errorOrTruncationOperation="Insert"
+                  errorRowDisposition="FailComponent"
+                  hasSideEffects="true"
+                  name="Excel Destination Plus Input">
+                  <inputColumns>
+                    <inputColumn
+                      refId="Package\Take STG and run out to Excel file\Excel Destination Plus.Inputs[Excel Destination Plus Input].Columns[ProgramID]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="50"
+                      cachedName="ProgramID"
+                      lineageId="Package\Take STG and run out to Excel file\OLE DB Source.Outputs[OLE DB Source Output].Columns[ProgramID]" />
+                    <inputColumn
+                      refId="Package\Take STG and run out to Excel file\Excel Destination Plus.Inputs[Excel Destination Plus Input].Columns[ImportDate]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="50"
+                      cachedName="ImportDate"
+                      lineageId="Package\Take STG and run out to Excel file\OLE DB Source.Outputs[OLE DB Source Output].Columns[ImportDate]" />
+                    <inputColumn
+                      refId="Package\Take STG and run out to Excel file\Excel Destination Plus.Inputs[Excel Destination Plus Input].Columns[Enrollment_Package]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="50"
+                      cachedName="Enrollment_Package"
+                      lineageId="Package\Take STG and run out to Excel file\OLE DB Source.Outputs[OLE DB Source Output].Columns[Enrollment_Package]" />
+                    <inputColumn
+                      refId="Package\Take STG and run out to Excel file\Excel Destination Plus.Inputs[Excel Destination Plus Input].Columns[IsBeyondContract]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="50"
+                      cachedName="IsBeyondContract"
+                      lineageId="Package\Take STG and run out to Excel file\OLE DB Source.Outputs[OLE DB Source Output].Columns[IsBeyondContract]" />
+                    <inputColumn
+                      refId="Package\Take STG and run out to Excel file\Excel Destination Plus.Inputs[Excel Destination Plus Input].Columns[ATC_POA]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="50"
+                      cachedName="ATC_POA"
+                      lineageId="Package\Take STG and run out to Excel file\OLE DB Source.Outputs[OLE DB Source Output].Columns[ATC_POA]" />
+                    <inputColumn
+                      refId="Package\Take STG and run out to Excel file\Excel Destination Plus.Inputs[Excel Destination Plus Input].Columns[Credit_Pull_Auth]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="50"
+                      cachedName="Credit_Pull_Auth"
+                      lineageId="Package\Take STG and run out to Excel file\OLE DB Source.Outputs[OLE DB Source Output].Columns[Credit_Pull_Auth]" />
+                    <inputColumn
+                      refId="Package\Take STG and run out to Excel file\Excel Destination Plus.Inputs[Excel Destination Plus Input].Columns[SPAA]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="50"
+                      cachedName="SPAA"
+                      lineageId="Package\Take STG and run out to Excel file\OLE DB Source.Outputs[OLE DB Source Output].Columns[SPAA]" />
+                    <inputColumn
+                      refId="Package\Take STG and run out to Excel file\Excel Destination Plus.Inputs[Excel Destination Plus Input].Columns[Docusign_Certificate]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="50"
+                      cachedName="Docusign_Certificate"
+                      lineageId="Package\Take STG and run out to Excel file\OLE DB Source.Outputs[OLE DB Source Output].Columns[Docusign_Certificate]" />
+                  </inputColumns>
+                  <externalMetadataColumns />
+                </input>
+              </inputs>
+              <outputs>
+                <output
+                  refId="Package\Take STG and run out to Excel file\Excel Destination Plus.Outputs[Excel Destination Plus Error Output]"
+                  exclusionGroup="1"
+                  isErrorOut="true"
+                  name="Excel Destination Plus Error Output"
+                  synchronousInputId="Package\Take STG and run out to Excel file\Excel Destination Plus.Inputs[Excel Destination Plus Input]">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\Take STG and run out to Excel file\Excel Destination Plus.Outputs[Excel Destination Plus Error Output].Columns[ErrorCode]"
+                      dataType="i4"
+                      lineageId="Package\Take STG and run out to Excel file\Excel Destination Plus.Outputs[Excel Destination Plus Error Output].Columns[ErrorCode]"
+                      name="ErrorCode"
+                      specialFlags="1" />
+                    <outputColumn
+                      refId="Package\Take STG and run out to Excel file\Excel Destination Plus.Outputs[Excel Destination Plus Error Output].Columns[ErrorColumn]"
+                      dataType="i4"
+                      lineageId="Package\Take STG and run out to Excel file\Excel Destination Plus.Outputs[Excel Destination Plus Error Output].Columns[ErrorColumn]"
+                      name="ErrorColumn"
+                      specialFlags="2" />
+                  </outputColumns>
+                  <externalMetadataColumns />
+                </output>
+              </outputs>
+            </component>
+            <component
+              refId="Package\Take STG and run out to Excel file\OLE DB Source"
+              componentClassID="Microsoft.OLEDBSource"
+              contactInfo="OLE DB Source;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;7"
+              description="OLE DB Source"
+              name="OLE DB Source"
+              usesDispositions="true"
+              version="7">
+              <properties>
+                <property
+                  dataType="System.Int32"
+                  description="The number of seconds before a command times out.  A value of 0 indicates an infinite time-out."
+                  name="CommandTimeout">0</property>
+                <property
+                  dataType="System.String"
+                  description="Specifies the name of the database object used to open a rowset."
+                  name="OpenRowset">[dbo].[stg_ClearOne_MissingData]</property>
+                <property
+                  dataType="System.String"
+                  description="Specifies the variable that contains the name of the database object used to open a rowset."
+                  name="OpenRowsetVariable"></property>
+                <property
+                  dataType="System.String"
+                  description="The SQL command to be executed."
+                  name="SqlCommand"
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor, Microsoft.DataTransformationServices.Controls, Version=15.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91"></property>
+                <property
+                  dataType="System.String"
+                  description="The variable that contains the SQL command to be executed."
+                  name="SqlCommandVariable"></property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the column code page to use when code page information is unavailable from the data source."
+                  name="DefaultCodePage">1252</property>
+                <property
+                  dataType="System.Boolean"
+                  description="Forces the use of the DefaultCodePage property value when describing character data."
+                  name="AlwaysUseDefaultCodePage">false</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the mode used to access the database."
+                  name="AccessMode"
+                  typeConverter="AccessMode">0</property>
+                <property
+                  dataType="System.String"
+                  description="The mappings between the parameters in the SQL command and variables."
+                  name="ParameterMapping"></property>
+              </properties>
+              <connections>
+                <connection
+                  refId="Package\Take STG and run out to Excel file\OLE DB Source.Connections[OleDbConnection]"
+                  connectionManagerID="Package.ConnectionManagers[HOU-IT-RSTEWART\SQL2017.BF_Redshift_Staging]"
+                  connectionManagerRefId="Package.ConnectionManagers[HOU-IT-RSTEWART\SQL2017.BF_Redshift_Staging]"
+                  description="The OLE DB runtime connection used to access the database."
+                  name="OleDbConnection" />
+              </connections>
+              <outputs>
+                <output
+                  refId="Package\Take STG and run out to Excel file\OLE DB Source.Outputs[OLE DB Source Output]"
+                  name="OLE DB Source Output">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\Take STG and run out to Excel file\OLE DB Source.Outputs[OLE DB Source Output].Columns[ProgramID]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Take STG and run out to Excel file\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[ProgramID]"
+                      length="50"
+                      lineageId="Package\Take STG and run out to Excel file\OLE DB Source.Outputs[OLE DB Source Output].Columns[ProgramID]"
+                      name="ProgramID"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Take STG and run out to Excel file\OLE DB Source.Outputs[OLE DB Source Output].Columns[ImportDate]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Take STG and run out to Excel file\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[ImportDate]"
+                      length="50"
+                      lineageId="Package\Take STG and run out to Excel file\OLE DB Source.Outputs[OLE DB Source Output].Columns[ImportDate]"
+                      name="ImportDate"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Take STG and run out to Excel file\OLE DB Source.Outputs[OLE DB Source Output].Columns[Enrollment_Package]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Take STG and run out to Excel file\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[Enrollment_Package]"
+                      length="50"
+                      lineageId="Package\Take STG and run out to Excel file\OLE DB Source.Outputs[OLE DB Source Output].Columns[Enrollment_Package]"
+                      name="Enrollment_Package"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Take STG and run out to Excel file\OLE DB Source.Outputs[OLE DB Source Output].Columns[IsBeyondContract]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Take STG and run out to Excel file\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[IsBeyondContract]"
+                      length="50"
+                      lineageId="Package\Take STG and run out to Excel file\OLE DB Source.Outputs[OLE DB Source Output].Columns[IsBeyondContract]"
+                      name="IsBeyondContract"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Take STG and run out to Excel file\OLE DB Source.Outputs[OLE DB Source Output].Columns[ATC_POA]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Take STG and run out to Excel file\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[ATC_POA]"
+                      length="50"
+                      lineageId="Package\Take STG and run out to Excel file\OLE DB Source.Outputs[OLE DB Source Output].Columns[ATC_POA]"
+                      name="ATC_POA"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Take STG and run out to Excel file\OLE DB Source.Outputs[OLE DB Source Output].Columns[Credit_Pull_Auth]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Take STG and run out to Excel file\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[Credit_Pull_Auth]"
+                      length="50"
+                      lineageId="Package\Take STG and run out to Excel file\OLE DB Source.Outputs[OLE DB Source Output].Columns[Credit_Pull_Auth]"
+                      name="Credit_Pull_Auth"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Take STG and run out to Excel file\OLE DB Source.Outputs[OLE DB Source Output].Columns[SPAA]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Take STG and run out to Excel file\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[SPAA]"
+                      length="50"
+                      lineageId="Package\Take STG and run out to Excel file\OLE DB Source.Outputs[OLE DB Source Output].Columns[SPAA]"
+                      name="SPAA"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Take STG and run out to Excel file\OLE DB Source.Outputs[OLE DB Source Output].Columns[Docusign_Certificate]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Take STG and run out to Excel file\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[Docusign_Certificate]"
+                      length="50"
+                      lineageId="Package\Take STG and run out to Excel file\OLE DB Source.Outputs[OLE DB Source Output].Columns[Docusign_Certificate]"
+                      name="Docusign_Certificate"
+                      truncationRowDisposition="FailComponent" />
+                  </outputColumns>
+                  <externalMetadataColumns
+                    isUsed="True">
+                    <externalMetadataColumn
+                      refId="Package\Take STG and run out to Excel file\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[ProgramID]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      name="ProgramID" />
+                    <externalMetadataColumn
+                      refId="Package\Take STG and run out to Excel file\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[ImportDate]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      name="ImportDate" />
+                    <externalMetadataColumn
+                      refId="Package\Take STG and run out to Excel file\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[Enrollment_Package]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      name="Enrollment_Package" />
+                    <externalMetadataColumn
+                      refId="Package\Take STG and run out to Excel file\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[IsBeyondContract]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      name="IsBeyondContract" />
+                    <externalMetadataColumn
+                      refId="Package\Take STG and run out to Excel file\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[ATC_POA]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      name="ATC_POA" />
+                    <externalMetadataColumn
+                      refId="Package\Take STG and run out to Excel file\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[Credit_Pull_Auth]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      name="Credit_Pull_Auth" />
+                    <externalMetadataColumn
+                      refId="Package\Take STG and run out to Excel file\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[SPAA]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      name="SPAA" />
+                    <externalMetadataColumn
+                      refId="Package\Take STG and run out to Excel file\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[Docusign_Certificate]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      name="Docusign_Certificate" />
+                  </externalMetadataColumns>
+                </output>
+                <output
+                  refId="Package\Take STG and run out to Excel file\OLE DB Source.Outputs[OLE DB Source Error Output]"
+                  isErrorOut="true"
+                  name="OLE DB Source Error Output">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\Take STG and run out to Excel file\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ProgramID]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      lineageId="Package\Take STG and run out to Excel file\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ProgramID]"
+                      name="ProgramID" />
+                    <outputColumn
+                      refId="Package\Take STG and run out to Excel file\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ImportDate]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      lineageId="Package\Take STG and run out to Excel file\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ImportDate]"
+                      name="ImportDate" />
+                    <outputColumn
+                      refId="Package\Take STG and run out to Excel file\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[Enrollment_Package]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      lineageId="Package\Take STG and run out to Excel file\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[Enrollment_Package]"
+                      name="Enrollment_Package" />
+                    <outputColumn
+                      refId="Package\Take STG and run out to Excel file\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[IsBeyondContract]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      lineageId="Package\Take STG and run out to Excel file\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[IsBeyondContract]"
+                      name="IsBeyondContract" />
+                    <outputColumn
+                      refId="Package\Take STG and run out to Excel file\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ATC_POA]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      lineageId="Package\Take STG and run out to Excel file\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ATC_POA]"
+                      name="ATC_POA" />
+                    <outputColumn
+                      refId="Package\Take STG and run out to Excel file\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[Credit_Pull_Auth]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      lineageId="Package\Take STG and run out to Excel file\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[Credit_Pull_Auth]"
+                      name="Credit_Pull_Auth" />
+                    <outputColumn
+                      refId="Package\Take STG and run out to Excel file\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[SPAA]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      lineageId="Package\Take STG and run out to Excel file\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[SPAA]"
+                      name="SPAA" />
+                    <outputColumn
+                      refId="Package\Take STG and run out to Excel file\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[Docusign_Certificate]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      lineageId="Package\Take STG and run out to Excel file\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[Docusign_Certificate]"
+                      name="Docusign_Certificate" />
+                    <outputColumn
+                      refId="Package\Take STG and run out to Excel file\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorCode]"
+                      dataType="i4"
+                      lineageId="Package\Take STG and run out to Excel file\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorCode]"
+                      name="ErrorCode"
+                      specialFlags="1" />
+                    <outputColumn
+                      refId="Package\Take STG and run out to Excel file\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorColumn]"
+                      dataType="i4"
+                      lineageId="Package\Take STG and run out to Excel file\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorColumn]"
+                      name="ErrorColumn"
+                      specialFlags="2" />
+                  </outputColumns>
+                  <externalMetadataColumns />
+                </output>
+              </outputs>
+            </component>
+          </components>
+          <paths>
+            <path
+              refId="Package\Take STG and run out to Excel file.Paths[OLE DB Source Output]"
+              endId="Package\Take STG and run out to Excel file\Excel Destination Plus.Inputs[Excel Destination Plus Input]"
+              name="OLE DB Source Output"
+              startId="Package\Take STG and run out to Excel file\OLE DB Source.Outputs[OLE DB Source Output]" />
+          </paths>
+        </pipeline>
+      </DTS:ObjectData>
+    </DTS:Executable>
+  </DTS:Executables>
+  <DTS:PrecedenceConstraints>
+    <DTS:PrecedenceConstraint
+      DTS:refId="Package.PrecedenceConstraints[Constraint]"
+      DTS:CreationName=""
+      DTS:DTSID="{D1B51313-C7D4-4C53-A449-4279A11E50CB}"
+      DTS:From="Package\Get Agent and Manager Data from Excel into STG"
+      DTS:LogicalAnd="True"
+      DTS:ObjectName="Constraint"
+      DTS:To="Package\Take STG and run out to Excel file" />
+    <DTS:PrecedenceConstraint
+      DTS:refId="Package.PrecedenceConstraints[Constraint 1]"
+      DTS:CreationName=""
+      DTS:DTSID="{2EB8AA24-3A53-418B-8106-9B1E236314F6}"
+      DTS:From="Package\Clear STG for new inventory"
+      DTS:LogicalAnd="True"
+      DTS:ObjectName="Constraint 1"
+      DTS:To="Package\Recreate List of All programs with Sales Agent and Sales Agent Manager" />
+    <DTS:PrecedenceConstraint
+      DTS:refId="Package.PrecedenceConstraints[Constraint 2]"
+      DTS:CreationName=""
+      DTS:DTSID="{8002A22E-8B09-458C-B64C-4BF0EDB27FEB}"
+      DTS:From="Package\Recreate List of All programs with Sales Agent and Sales Agent Manager"
+      DTS:LogicalAnd="True"
+      DTS:ObjectName="Constraint 2"
+      DTS:To="Package\Get Agent and Manager Data from Excel into STG" />
+    <DTS:PrecedenceConstraint
+      DTS:refId="Package.PrecedenceConstraints[Constraint 3]"
+      DTS:CreationName=""
+      DTS:DTSID="{67F8139B-94F9-4EC2-AB94-8F81819F5B91}"
+      DTS:From="Package\Take STG and run out to Excel file"
+      DTS:LogicalAnd="True"
+      DTS:ObjectName="Constraint 3"
+      DTS:To="Package\Send Mail Task Plus" />
+  </DTS:PrecedenceConstraints>
+  <DTS:DesignTimeProperties><![CDATA[<?xml version="1.0"?>
+<!--This CDATA section contains the layout information of the package. The section includes information such as (x,y) coordinates, width, and height.-->
+<!--If you manually edit this section and make a mistake, you can delete it. -->
+<!--The package will still be able to load normally but the previous layout information will be lost and the designer will automatically re-arrange the elements on the design surface.-->
+<Objects
+  Version="8">
+  <!--Each node below will contain properties that do not affect runtime behavior.-->
+  <Package
+    design-time-name="Package">
+    <LayoutInfo>
+      <GraphLayout
+        Capacity="16" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml">
+        <NodeLayout
+          Size="420,42"
+          Id="Package\Clear STG for new inventory"
+          TopLeft="144,42" />
+        <NodeLayout
+          Size="420,42"
+          Id="Package\Get Agent and Manager Data from Excel into STG"
+          TopLeft="144,141.5" />
+        <NodeLayout
+          Size="420,42"
+          Id="Package\Recreate List of All programs with Sales Agent and Sales Agent Manager"
+          TopLeft="144,91.75" />
+        <NodeLayout
+          Size="420,42"
+          Id="Package\Send Mail Task Plus"
+          TopLeft="144,241" />
+        <NodeLayout
+          Size="420,42"
+          Id="Package\Take STG and run out to Excel file"
+          TopLeft="144,191.25" />
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Constraint]"
+          TopLeft="144,168.166666666667">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="0,38.4166666666667"
+              Start="0,0"
+              End="-7.5,38.4166666666667">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="-18.5,0" />
+                  <mssgle:CubicBezierSegment
+                    Point1="-18.5,0"
+                    Point2="-22.5,0"
+                    Point3="-22.5,4" />
+                  <mssgle:LineSegment
+                    End="-22.5,34.4166666666667" />
+                  <mssgle:CubicBezierSegment
+                    Point1="-22.5,34.4166666666667"
+                    Point2="-22.5,38.4166666666667"
+                    Point3="-18.5,38.4166666666667" />
+                  <mssgle:LineSegment
+                    End="-7.5,38.4166666666667" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Constraint 1]"
+          TopLeft="144,63">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="0,44.0833333333333"
+              Start="0,0"
+              End="-7.5,44.0833333333333">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="-18.5,0" />
+                  <mssgle:CubicBezierSegment
+                    Point1="-18.5,0"
+                    Point2="-22.5,0"
+                    Point3="-22.5,4" />
+                  <mssgle:LineSegment
+                    End="-22.5,40.0833333333333" />
+                  <mssgle:CubicBezierSegment
+                    Point1="-22.5,40.0833333333333"
+                    Point2="-22.5,44.0833333333333"
+                    Point3="-18.5,44.0833333333333" />
+                  <mssgle:LineSegment
+                    End="-7.5,44.0833333333333" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Constraint 2]"
+          TopLeft="144,118.416666666667">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="0,38.4166666666667"
+              Start="0,0"
+              End="-7.5,38.4166666666667">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="-18.5,0" />
+                  <mssgle:CubicBezierSegment
+                    Point1="-18.5,0"
+                    Point2="-22.5,0"
+                    Point3="-22.5,4" />
+                  <mssgle:LineSegment
+                    End="-22.5,34.4166666666667" />
+                  <mssgle:CubicBezierSegment
+                    Point1="-22.5,34.4166666666667"
+                    Point2="-22.5,38.4166666666667"
+                    Point3="-18.5,38.4166666666667" />
+                  <mssgle:LineSegment
+                    End="-7.5,38.4166666666667" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Constraint 3]"
+          TopLeft="144,217.916666666667">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="0,44.0833333333333"
+              Start="0,0"
+              End="-7.5,44.0833333333333">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="-18.5,0" />
+                  <mssgle:CubicBezierSegment
+                    Point1="-18.5,0"
+                    Point2="-22.5,0"
+                    Point3="-22.5,4" />
+                  <mssgle:LineSegment
+                    End="-22.5,40.0833333333333" />
+                  <mssgle:CubicBezierSegment
+                    Point1="-22.5,40.0833333333333"
+                    Point2="-22.5,44.0833333333333"
+                    Point3="-18.5,44.0833333333333" />
+                  <mssgle:LineSegment
+                    End="-7.5,44.0833333333333" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+      </GraphLayout>
+    </LayoutInfo>
+  </Package>
+  <TaskHost
+    design-time-name="Package\Get Agent and Manager Data from Excel into STG">
+    <LayoutInfo>
+      <GraphLayout
+        Capacity="8" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
+        <NodeLayout
+          Size="113,42"
+          Id="Package\Get Agent and Manager Data from Excel into STG\Lookup"
+          TopLeft="109,154" />
+        <NodeLayout
+          Size="171,42"
+          Id="Package\Get Agent and Manager Data from Excel into STG\OLE DB Destination"
+          TopLeft="123,288" />
+        <NodeLayout
+          Size="161,42"
+          Id="Package\Get Agent and Manager Data from Excel into STG\Excel Source Plus"
+          TopLeft="115,57" />
+        <EdgeLayout
+          Id="Package\Get Agent and Manager Data from Excel into STG.Paths[Excel Source Plus Output]"
+          TopLeft="195.5,99">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="-30,55"
+              Start="0,0"
+              End="-30,47.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,23.5" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,23.5"
+                    Point2="0,27.5"
+                    Point3="-4,27.5" />
+                  <mssgle:LineSegment
+                    End="-26,27.5" />
+                  <mssgle:CubicBezierSegment
+                    Point1="-26,27.5"
+                    Point2="-30,27.5"
+                    Point3="-30,31.5" />
+                  <mssgle:LineSegment
+                    End="-30,47.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\Get Agent and Manager Data from Excel into STG.Paths[Lookup Match Output]"
+          TopLeft="165.5,196">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="43,92"
+              Start="0,0"
+              End="43,84.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,42" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,42"
+                    Point2="0,46"
+                    Point3="4,46" />
+                  <mssgle:LineSegment
+                    End="39,46" />
+                  <mssgle:CubicBezierSegment
+                    Point1="39,46"
+                    Point2="43,46"
+                    Point3="43,50" />
+                  <mssgle:LineSegment
+                    End="43,84.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="-26.69138671875,51,96.3827734375,11.609375"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+      </GraphLayout>
+    </LayoutInfo>
+  </TaskHost>
+  <PipelineComponentMetadata
+    design-time-name="Package\Get Agent and Manager Data from Excel into STG\Lookup">
+    <Properties>
+      <Property>
+        <Name>OverwriteParamsSQLProp</Name>
+        <Value
+          type="q2:boolean">false</Value>
+      </Property>
+      <Property>
+        <Name>UsedTableName</Name>
+        <Value
+          type="q3:string">[dbo].[stg_AllPrograms]</Value>
+      </Property>
+      <Property>
+        <Name>TableInfoObjectType</Name>
+        <Value
+          type="q4:int">0</Value>
+      </Property>
+      <Property>
+        <Name>DataSourceViewID</Name>
+      </Property>
+    </Properties>
+  </PipelineComponentMetadata>
+  <PipelineComponentMetadata
+    design-time-name="Package\Get Agent and Manager Data from Excel into STG\OLE DB Destination">
+    <Properties>
+      <Property>
+        <Name>DataSourceViewID</Name>
+      </Property>
+      <Property>
+        <Name>TableInfoObjectType</Name>
+        <Value
+          type="q2:string">Table</Value>
+      </Property>
+    </Properties>
+  </PipelineComponentMetadata>
+  <TaskHost
+    design-time-name="Package\Recreate List of All programs with Sales Agent and Sales Agent Manager">
+    <LayoutInfo>
+      <GraphLayout
+        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
+        <NodeLayout
+          Size="142,42"
+          Id="Package\Recreate List of All programs with Sales Agent and Sales Agent Manager\ODBC Source"
+          TopLeft="132,51" />
+        <NodeLayout
+          Size="171,42"
+          Id="Package\Recreate List of All programs with Sales Agent and Sales Agent Manager\OLE DB Destination"
+          TopLeft="137,152" />
+        <EdgeLayout
+          Id="Package\Recreate List of All programs with Sales Agent and Sales Agent Manager.Paths[ODBC Source Output]"
+          TopLeft="203,93">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="19.5,59"
+              Start="0,0"
+              End="19.5,51.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,25.5" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,25.5"
+                    Point2="0,29.5"
+                    Point3="4,29.5" />
+                  <mssgle:LineSegment
+                    End="15.5,29.5" />
+                  <mssgle:CubicBezierSegment
+                    Point1="15.5,29.5"
+                    Point2="19.5,29.5"
+                    Point3="19.5,33.5" />
+                  <mssgle:LineSegment
+                    End="19.5,51.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="0,0,0,0"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+      </GraphLayout>
+    </LayoutInfo>
+  </TaskHost>
+  <PipelineComponentMetadata
+    design-time-name="Package\Recreate List of All programs with Sales Agent and Sales Agent Manager\ODBC Source">
+    <Properties>
+      <Property>
+        <Name>DataSourceViewID</Name>
+      </Property>
+    </Properties>
+  </PipelineComponentMetadata>
+  <PipelineComponentMetadata
+    design-time-name="Package\Recreate List of All programs with Sales Agent and Sales Agent Manager\OLE DB Destination">
+    <Properties>
+      <Property>
+        <Name>DataSourceViewID</Name>
+      </Property>
+      <Property>
+        <Name>TableInfoObjectType</Name>
+        <Value
+          type="q2:string">Table</Value>
+      </Property>
+    </Properties>
+  </PipelineComponentMetadata>
+  <TaskHost
+    design-time-name="Package\Take STG and run out to Excel file">
+    <LayoutInfo>
+      <GraphLayout
+        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml">
+        <NodeLayout
+          Size="150,42"
+          Id="Package\Take STG and run out to Excel file\OLE DB Source"
+          TopLeft="80,49" />
+        <NodeLayout
+          Size="182,42"
+          Id="Package\Take STG and run out to Excel file\Excel Destination Plus"
+          TopLeft="80,138" />
+        <EdgeLayout
+          Id="Package\Take STG and run out to Excel file.Paths[OLE DB Source Output]"
+          TopLeft="155,91">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="16,47"
+              Start="0,0"
+              End="16,39.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,19.5" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,19.5"
+                    Point2="0,23.5"
+                    Point3="4,23.5" />
+                  <mssgle:LineSegment
+                    End="12,23.5" />
+                  <mssgle:CubicBezierSegment
+                    Point1="12,23.5"
+                    Point2="16,23.5"
+                    Point3="16,27.5" />
+                  <mssgle:LineSegment
+                    End="16,39.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+      </GraphLayout>
+    </LayoutInfo>
+  </TaskHost>
+  <PipelineComponentMetadata
+    design-time-name="Package\Take STG and run out to Excel file\OLE DB Source">
+    <Properties>
+      <Property>
+        <Name>DataSourceViewID</Name>
+      </Property>
+      <Property>
+        <Name>TableInfoObjectType</Name>
+        <Value
+          type="q2:string">Table</Value>
+      </Property>
+    </Properties>
+  </PipelineComponentMetadata>
+</Objects>]]></DTS:DesignTimeProperties>
+</DTS:Executable>
